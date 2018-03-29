@@ -5,7 +5,7 @@ import akka.stream.scaladsl.{Source, SourceQueue}
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer
 import com.gilt.gfc.aws.kinesis.client.KinesisRecordReader
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration.Duration
 
 object KinesisStreamSource {
@@ -26,19 +26,25 @@ object KinesisStreamSource {
     * pumping messages to the underlying flow
     * @param streamConfig Configuration of the Kinesis stream to consume
     * @param pumpingTimeoutDuration Duration that source will wait for the akka stream to process message
+    * @param bufferSize Size of the buffer to hold the incoming messages
+    * @param overflowStrategy What to do with messages that would overflow the buffer e.g. backpressure or drop
     * @param evReader Deserialization typeclass
+    * @param executionContext The execution context to be used for running the kinesis consumer
     * @return akka Source that on materialization gets messages from Kinesis stream and pump them through the flow
     */
   def apply[T](
     streamConfig: KinesisStreamConsumerConfig[T],
-    pumpingTimeoutDuration: Duration = Duration.Inf
+    pumpingTimeoutDuration: Duration = Duration.Inf,
+    bufferSize : Int = 0,
+    overflowStrategy: OverflowStrategy = OverflowStrategy.backpressure,
   ) (
-    implicit evReader: KinesisRecordReader[T]
+    implicit evReader: KinesisRecordReader[T],
+    executionContext: ExecutionContext
   ) = {
-    Source.queue[T](0, OverflowStrategy.backpressure)
+    Source.queue[T](bufferSize, overflowStrategy)
       .mapMaterializedValue(queue => {
         val consumer = new KinesisStreamConsumer[T](streamConfig, KinesisStreamHandler(pumpKinesisStreamTo(queue, pumpingTimeoutDuration)))
-        consumer.run
+        Future(consumer.run)
       })
   }
 }
