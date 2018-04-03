@@ -36,7 +36,7 @@ object KinesisStreamSource {
     streamConfig: KinesisStreamConsumerConfig[T],
     pumpingTimeoutDuration: Duration = Duration.Inf,
     bufferSize : Int = 0,
-    overflowStrategy: OverflowStrategy = OverflowStrategy.backpressure,
+    overflowStrategy: OverflowStrategy = OverflowStrategy.backpressure
   ) (
     implicit evReader: KinesisRecordReader[T],
     executionContext: ExecutionContext
