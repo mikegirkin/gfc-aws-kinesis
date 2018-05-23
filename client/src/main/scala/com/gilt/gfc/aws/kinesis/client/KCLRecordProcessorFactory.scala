@@ -38,7 +38,7 @@ object KCLRecordProcessorFactory {
     * @param initialRetryDelay  the initial failed operation retry delay value, defaults to 10 seconds
     * @param maxRetryDelay      the maximum failed operation retry delay value, defaults to 3 minutes
     */
-  def apply( checkpointInterval: FiniteDuration = 5 minutes
+  def apply( checkpointInterval: Duration = 5 minutes
            , numRetries: Int = 3
            , initialize: (String) => Unit = (_) => ()
            , shutdown: (String, IRecordProcessorCheckpointer, ShutdownReason) => Unit = (_,_,_) => ()
@@ -48,7 +48,7 @@ object KCLRecordProcessorFactory {
            ): IRecordProcessorFactory = {
 
     new IRecordProcessorFactoryImpl(
-      checkpointInterval.toMillis
+      checkpointInterval
     , numRetries
     , initialize
     , shutdown
@@ -60,8 +60,7 @@ object KCLRecordProcessorFactory {
 
   private
   class IRecordProcessorFactoryImpl(
-
-    checkpointIntervalMillis: Long
+    checkpointInterval: Duration
   , numRetries: Int
   , doInitialize: (String) => Unit
   , doShutdown: (String, IRecordProcessorCheckpointer, ShutdownReason) => Unit
@@ -126,7 +125,7 @@ object KCLRecordProcessorFactory {
         }
 
         // Checkpoint periodically
-        if ( System.currentTimeMillis - lastCheckpointTimestamp > checkpointIntervalMillis ) {
+        if ( checkpointInterval.isFinite() &&  System.currentTimeMillis - lastCheckpointTimestamp > checkpointInterval.toMillis ) {
           doRetry{ doCheckpoint(checkpointer) }
         }
       }
