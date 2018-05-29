@@ -30,7 +30,7 @@ import scala.util.{Failure, Success, Try}
 case class KCLWorkerRunner (
   config: KinesisClientLibConfiguration
 , dynamoDBKinesisAdapter: Option[AmazonDynamoDBStreamsAdapterClient] = None
-, checkpointInterval: FiniteDuration = 5 minutes
+, checkpointInterval: Duration = 5 minutes
 , numRetries: Int = 3
 , initialize: (String) => Unit = (_) => ()
 , shutdown: (String, IRecordProcessorCheckpointer, ShutdownReason) => Unit = (_,_,_) => ()
@@ -42,7 +42,7 @@ case class KCLWorkerRunner (
   private[this] var workers = List[Worker]()
 
   /** Override default checkpointInterval. */
-  def withCheckpointInterval( cpi: FiniteDuration
+  def withCheckpointInterval( cpi: Duration
                             ): KCLWorkerRunner = {
 
     this.copy(checkpointInterval = cpi)

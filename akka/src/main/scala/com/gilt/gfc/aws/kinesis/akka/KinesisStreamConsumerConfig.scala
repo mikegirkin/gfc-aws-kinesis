@@ -16,7 +16,7 @@ case class KinesisStreamConsumerConfig[T](
   dynamoCredentialsProvider: AWSCredentialsProvider = new DefaultAWSCredentialsProviderChain(),
   cloudWatchCredentialsProvider: AWSCredentialsProvider = new DefaultAWSCredentialsProviderChain(),
   metricsFactory: IMetricsFactory = new NullMetricsFactory(),
-  checkPointInterval: FiniteDuration = 5.minutes,
+  checkPointInterval: Duration = 5.minutes,
   retryConfig: RetryConfig = RetryConfig(1.second, 1.second, 3),
   initialPositionInStream: InitialPositionInStream = InitialPositionInStream.LATEST,
   regionName: Option[String] = None,
