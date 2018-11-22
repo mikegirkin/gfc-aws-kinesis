@@ -74,7 +74,7 @@ lazy val akka = (project in file("akka"))
   .settings(commonSettings:_*)
   .settings(
     name := "gfc-aws-kinesis-akka",
-    libraryDependencies += "com.typesafe.akka" %% "akka-stream" % "2.5.6")
+    libraryDependencies += "com.typesafe.akka" %% "akka-stream" % "2.5.18")
   .dependsOn(client)
 
 lazy val root = (project in file("."))
