@@ -5,9 +5,9 @@ val commonSettings = Seq(
 
   releaseCrossBuild := true,
 
-  scalacOptions += "-target:jvm-1.7",
+  scalacOptions += "-target:jvm-1.8",
 
-  javacOptions ++= Seq("-source", "1.7", "-target", "1.7"),
+  javacOptions ++= Seq("-source", "1.8", "-target", "1.8"),
 
   releasePublishArtifactsAction := PgpKeys.publishSigned.value,
 
